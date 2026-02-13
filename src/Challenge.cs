@@ -10,7 +10,110 @@ namespace DesignPatternChallenge
 {
     // Contexto: Sistema de BI que gera relatórios customizados para diferentes departamentos
     // Cada relatório pode ter dezenas de configurações opcionais
-    
+
+    public class SalesReportBuilder
+    {
+        private SalesReport _report = new SalesReport();
+
+        public SalesReportBuilder SetTitle(string title)
+        {
+            _report.Title = title;
+            return this;
+        }
+        public SalesReportBuilder SetFormat(string format)
+        {
+            _report.Format = format;
+            return this;
+        }
+        public SalesReportBuilder SetDateRange(DateTime start, DateTime end)
+        {
+
+            _report.StartDate = start;
+            _report.EndDate = end;
+            return this;
+        }
+        public SalesReportBuilder SetHeader(string text, bool show = true)
+        {
+            _report.HeaderText = text;
+            _report.IncludeHeader = show;
+            return this;
+        }
+        public SalesReportBuilder SetFooter(string text, bool show = true)
+        {
+            _report.FooterText = text;
+            _report.IncludeFooter = show;
+            return this;
+        }
+        public SalesReportBuilder SetChart(bool show, string type = "Bar")
+        {
+            _report.IncludeCharts = show;
+            _report.ChartType = type;
+            return this;
+        }
+        public SalesReportBuilder SetColumns(params string[] columns)
+        {
+            _report.Columns.AddRange(columns);
+            return this;
+        }
+        public SalesReportBuilder SetFilters(params string[] filters)
+        {
+            _report.Filters.AddRange(filters);
+            return this;
+        }
+        public SalesReportBuilder SetSummary(bool show = true)
+        {
+            _report.IncludeSummary = show;
+            return this;
+        }
+        public SalesReportBuilder SetSortBy(string column)
+        {
+            _report.SortBy = column;
+            return this;
+        }
+        public SalesReportBuilder SetGroupBy(string column)
+        {
+            _report.GroupBy = column;
+            return this;
+        }
+        public SalesReportBuilder SetTotals(bool show = true)
+        {
+            _report.IncludeTotals = show;
+            return this;
+        }
+        public SalesReportBuilder SetOrientation(string orientation)
+        {
+            _report.Orientation = orientation;
+            return this;
+        }
+        public SalesReportBuilder SetPageSize(string size)
+        {
+            _report.PageSize = size;
+            return this;
+        }
+        public SalesReportBuilder SetPageNumbers(bool show = true)
+        {
+            _report.IncludePageNumbers = show;
+            return this;
+        }
+        public SalesReportBuilder SetCompanyLogo(string logoPath)
+        {
+            _report.CompanyLogo = logoPath;
+            return this;
+        }
+        public SalesReportBuilder SetWaterMark(string text)
+        {
+            _report.WaterMark = text;
+            return this;
+        }
+        public SalesReport Build()
+        {
+            if (string.IsNullOrEmpty(_report.Title))
+                throw new InvalidOperationException("Title é obrigatório!");
+
+            return _report;
+        }
+    }
+
     public class SalesReport
     {
         public string Title { get; set; }
@@ -122,70 +225,52 @@ namespace DesignPatternChallenge
         {
             Console.WriteLine("=== Sistema de Relatórios ===");
 
-            // Problema 1: Construtor com muitos parâmetros - difícil de ler e usar
-            var report1 = new SalesReport(
-                "Vendas Mensais",           // title
-                "PDF",                       // format
-                new DateTime(2024, 1, 1),   // startDate
-                new DateTime(2024, 1, 31),  // endDate
-                true,                        // includeHeader
-                true,                        // includeFooter
-                "Relatório de Vendas",      // headerText
-                "Confidencial",              // footerText
-                true,                        // includeCharts
-                "Bar",                       // chartType
-                true,                        // includeSummary
-                new List<string> { "Produto", "Quantidade", "Valor" },  // columns
-                new List<string> { "Status=Ativo" },  // filters
-                "Valor",                     // sortBy
-                "Categoria",                 // groupBy
-                true,                        // includeTotals
-                "Portrait",                  // orientation
-                "A4",                        // pageSize
-                true,                        // includePageNumbers
-                "logo.png",                  // companyLogo
-                "Confidencial"               // waterMark
-            );
+            var report1 = new SalesReportBuilder()
+                .SetTitle("Vendas Mensais").SetFormat("PDF")
+                .SetDateRange(new DateTime(2024, 1, 1), new DateTime(2024, 1, 31))
+                .SetHeader("Relatório de Vendas")
+                .SetFooter("Confidencial")
+                .SetChart(true, "Bar")
+                .SetColumns("Produto", "Quantidade", "Valor")
+                .SetFilters("Status=Ativo")
+                .SetSummary(true)
+                .SetSortBy("Valor")
+                .SetGroupBy("Categoria")
+                .SetTotals(true)
+                .SetOrientation("Portrait")
+                .SetPageSize("A4")
+                .SetPageNumbers(true)
+                .SetCompanyLogo("logo.png")
+                .SetWaterMark("Confidencial")
+                .Build();
 
             report1.Generate();
 
-            // Problema 2: Muitos setters - ordem não importa, pode esquecer configurações obrigatórias
-            var report2 = new SalesReport();
-            report2.Title = "Relatório Trimestral";
-            report2.Format = "Excel";
-            report2.StartDate = new DateTime(2024, 1, 1);
-            report2.EndDate = new DateTime(2024, 3, 31);
-            report2.Columns.Add("Vendedor");
-            report2.Columns.Add("Região");
-            report2.Columns.Add("Total");
-            report2.IncludeCharts = true;
-            report2.ChartType = "Line";
-            // Esqueci de configurar algo? O código compila mas pode falhar em runtime
-            report2.IncludeHeader = true;
-            // Esqueci o HeaderText? 
-            report2.GroupBy = "Região";
-            report2.IncludeTotals = true;
+            var report2 = new SalesReportBuilder()
+                .SetTitle("Relatório Trimestral")
+                .SetFormat("Excel")
+                .SetDateRange(new DateTime(2024, 1, 1), new DateTime(2024, 3, 31))
+                .SetColumns("Vendedor", "Região", "Total")
+                .SetChart(true, "Line")
+                .SetHeader("Relatório Trimestral")
+                .SetGroupBy("Região")
+                .SetTotals()
+                .Build();
 
             report2.Generate();
 
-            // Problema 3: Relatórios com configurações parecidas exigem repetir muito código
-            var report3 = new SalesReport();
-            report3.Title = "Vendas Anuais";
-            report3.Format = "PDF";
-            report3.StartDate = new DateTime(2024, 1, 1);
-            report3.EndDate = new DateTime(2024, 12, 31);
-            report3.IncludeHeader = true;
-            report3.HeaderText = "Relatório de Vendas";
-            report3.IncludeFooter = true;
-            report3.FooterText = "Confidencial";
-            report3.Columns.Add("Produto");
-            report3.Columns.Add("Quantidade");
-            report3.Columns.Add("Valor");
-            report3.IncludeCharts = true;
-            report3.ChartType = "Pie";
-            report3.IncludeTotals = true;
-            report3.Orientation = "Landscape";
-            report3.PageSize = "A4";
+            var report3 = new SalesReportBuilder()
+                .SetTitle("Vendas Anuais")
+                .SetFormat("PDF")
+                .SetDateRange(new DateTime(2024, 1, 1), new DateTime(2024, 12, 31))
+                .SetHeader("Relatório de Vendas")
+                .SetFooter("Confidencial")
+                .SetColumns("Produto", "Quantidade", "Valor")
+                .SetChart(true, "Pie")
+                .SetTotals()
+                .SetOrientation("Landscape")
+                .SetPageSize("A4")
+                .Build();
 
             report3.Generate();
 
