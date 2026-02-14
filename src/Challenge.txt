@@ -1,0 +1,19 @@
+DESAFIO: Gerador de Relatórios Complexos
+PROBLEMA: Sistema precisa gerar diferentes tipos de relatórios (PDF, Excel, HTML)
+com múltiplas configurações opcionais (cabeçalho, rodapé, gráficos, tabelas, filtros)
+O código atual usa construtores enormes ou muitos setters, tornando difícil criar relatórios
+
+Contexto: Sistema de BI que gera relatórios customizados para diferentes departamentos
+Cada relatório pode ter dezenas de configurações opcionais
+
+Problema 1: Construtor com muitos parâmetros - difícil de ler e usar
+Problema 2: Muitos setters - ordem não importa, pode esquecer configurações obrigatórias
+Problema 3: Relatórios com configurações parecidas exigem repetir muito código
+
+Perguntas para reflexão:
+- Como criar relatórios complexos sem construtores gigantes?
+- Como garantir que configurações obrigatórias sejam definidas?
+- Como reutilizar configurações comuns entre relatórios?
+- Como tornar o processo de criação mais legível e fluente?
+
+SOLUÇÃO: Builder Pattern
